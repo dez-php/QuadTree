@@ -2,7 +2,7 @@ package dez.quadtree;
 
 public enum NodeType {
 
-    NW(1), NE(2), SE(3), SW(4), ABROAD(-1);
+    NW(1), NE(2), SE(3), SW(4);
 
     private int position;
 

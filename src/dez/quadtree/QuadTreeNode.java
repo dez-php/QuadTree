@@ -1,14 +1,14 @@
 package dez.quadtree;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 public class QuadTreeNode<T> {
 
-    public static final int MAX_OBJECTS_PER_NODE = 10;
-    public static final int MAX_DEPTH            = 8;
+    public static final int MAX_OBJECTS_PER_NODE = 2;
+    public static final int MAX_DEPTH            = 10;
 
     private int     depth       = 0;
     private boolean hasChildren = false;
@@ -20,57 +20,94 @@ public class QuadTreeNode<T> {
     {
         this.bounds = new QuadTreeBound(minX, minY, maxX, maxY);
         this.leafs = new ArrayList<>();
-        this.nodes = new EnumMap<NodeType, QuadTreeNode<T>>(NodeType.class);
+        this.nodes = new EnumMap<>(NodeType.class);
+        this.depth = depth;
     }
 
-    public boolean put(QuadTreeLeaf<T> treeLeaf)
+    public void draw(Graphics2D gfx)
     {
-        NodeType nodeType = this.detectNodeType(treeLeaf);
 
-        if (MAX_OBJECTS_PER_NODE > this.leafs.size()) {
-            this.leafs.add(treeLeaf);
-        } else if (MAX_DEPTH > this.getDepth() && this.leafs.size() >= MAX_OBJECTS_PER_NODE) {
-            this.splitNode();
-
-            int i = 0;
-            while (this.leafs.size() > 0) {
-                i++;
-                this.nodes.get(this.detectNodeType(this.leafs.get(i))).put(this.leafs.remove(i));
-            }
-        } else {
-            throw new StackOverflowError("Max count elements of last node");
+        for (QuadTreeLeaf leaf : this.leafs) {
+            gfx.fillOval((int) leaf.x - 2, (int) leaf.y - 2, 4, 4);
         }
 
-        return false;
+        if (this.hasChildren) {
+            for (NodeType nodeType : NodeType.values()) {
+                this.nodes.get(nodeType).draw(gfx);
+            }
+        }
+    }
+
+    public void clear()
+    {
+        this.leafs.clear();
+
+        if (this.hasChildren) {
+            for (NodeType nodeType : NodeType.values()) {
+                this.nodes.get(nodeType).clear();
+            }
+        }
+
+        this.hasChildren = false;
+        this.nodes.clear();
+    }
+
+    public void put(QuadTreeLeaf<T> treeLeaf)
+    {
+        if (this.hasChildren) {
+            this.nodes.get(this.detectNodeType(treeLeaf)).put(treeLeaf);
+        } else {
+            if (MAX_OBJECTS_PER_NODE > this.leafs.size()) {
+                this.leafs.add(treeLeaf);
+            } else if (MAX_DEPTH > this.getDepth() && this.leafs.size() >= MAX_OBJECTS_PER_NODE) {
+                this.splitNode();
+
+                this.nodes.get(this.detectNodeType(treeLeaf)).put(treeLeaf);
+                for (QuadTreeLeaf<T> leaf : this.leafs) {
+                    this.nodes.get(this.detectNodeType(leaf)).put(leaf);
+                }
+                this.leafs.clear();
+            } else {
+                this.leafs.add(treeLeaf);
+//                throw new StackOverflowError("Max count elements. depth: " + this.depth);
+            }
+        }
     }
 
     public void splitNode()
     {
-        this.nodes.put(NodeType.NW,
-                       new QuadTreeNode<T>(this.bounds.minX, this.bounds.minY, this.bounds.centreX, this.bounds.centreY,
-                                           this.depth + 1));
-        this.nodes.put(NodeType.NE,
-                       new QuadTreeNode<T>(this.bounds.centreX, this.bounds.minY, this.bounds.maxX, this.bounds.centreY,
-                                           this.depth + 1));
-        this.nodes.put(NodeType.SE,
-                       new QuadTreeNode<T>(this.bounds.centreX, this.bounds.centreY, this.bounds.maxX, this.bounds.maxY,
-                                           this.depth + 1));
-        this.nodes.put(NodeType.SW,
-                       new QuadTreeNode<T>(this.bounds.minX, this.bounds.centreY, this.bounds.centreX, this.bounds.maxY,
-                                           this.depth + 1));
+        this.nodes.put(NodeType.NW, new QuadTreeNode<T>(this.bounds.minX, this.bounds.minY, this.bounds.centreX, this.bounds.centreY, this.depth + 1));
+        this.nodes.put(NodeType.NE, new QuadTreeNode<T>(this.bounds.centreX, this.bounds.minY, this.bounds.maxX, this.bounds.centreY, this.depth + 1));
+        this.nodes.put(NodeType.SE, new QuadTreeNode<T>(this.bounds.centreX, this.bounds.centreY, this.bounds.maxX, this.bounds.maxY, this.depth + 1));
+        this.nodes.put(NodeType.SW, new QuadTreeNode<T>(this.bounds.minX, this.bounds.centreY, this.bounds.centreX, this.bounds.maxY, this.depth + 1));
 
-        this.hasChildren = false;
+        this.hasChildren = true;
     }
 
-    public NodeType detectNodeType(QuadTreeLeaf treeLeaf)
+    public NodeType detectNodeType(Rectangle rectangle)
+    {
+        int x = (int) rectangle.getCenterX();
+        int y = (int) rectangle.getCenterY();
+
+        return this.detectNodeType(x, y);
+    }
+
+    public NodeType detectNodeType(QuadTreeLeaf<T> treeLeaf)
     {
         return this.detectNodeType(treeLeaf.x, treeLeaf.y);
     }
 
     public NodeType detectNodeType(double x, double y)
     {
+        NodeType nodeType;
 
-        return NodeType.ABROAD;
+        if (x > this.bounds.centreX) {
+            nodeType = y > this.bounds.centreY ? NodeType.SE : NodeType.NE;
+        } else {
+            nodeType = y > this.bounds.centreY ? NodeType.SW : NodeType.NW;
+        }
+
+        return nodeType;
     }
 
     public int getDepth()
@@ -90,6 +127,7 @@ public class QuadTreeNode<T> {
 
     public String toString()
     {
-        return String.format("QuadTreeNode{ bounds: %s, nodes: %s }", this.bounds, this.nodes);
+        return String.format("QuadTreeNode{ bounds: %s, \nleafs: %s,\n nodes: %s }", this.bounds, this.leafs.size(),
+                             this.nodes);
     }
 }
