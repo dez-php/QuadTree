@@ -69,7 +69,6 @@ public class QuadTreeNode<T> {
                 this.leafs.clear();
             } else {
                 this.leafs.add(treeLeaf);
-//                throw new StackOverflowError("Max count elements. depth: " + this.depth);
             }
         }
     }

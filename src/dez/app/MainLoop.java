@@ -31,11 +31,15 @@ public class MainLoop implements Runnable {
         Random random = new Random();
         this.leafs = new ArrayList<>();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < (MainFrame.WIDTH / 16) * (MainFrame.HEIGHT / 16); i++) {
             int x = random.nextInt(MainFrame.WIDTH);
             int y = random.nextInt(MainFrame.HEIGHT);
             this.leafs.add(new QuadTreeLeaf<>(x, y, new Entity(x, y)));
         }
+
+        Rectangle rectangle = new Rectangle();
+
+//        rectangle.getBounds2D()
 
         for(QuadTreeLeaf l : this.leafs) {
             tree.add(l);
@@ -43,7 +47,7 @@ public class MainLoop implements Runnable {
 
     }
 
-    public void start()
+    public synchronized void start()
     {
         if (isRunning) {
             return;
@@ -55,7 +59,7 @@ public class MainLoop implements Runnable {
         this.thread.start();
     }
 
-    public void stop()
+    public synchronized void stop()
     {
         if (!isRunning) {
             return;
