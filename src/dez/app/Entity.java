@@ -1,31 +1,66 @@
 package dez.app;
 
-import java.awt.*;
+import dez.quadtree.Object2D;
 
-public class Entity {
+public class Entity implements Object2D {
+
+    public static final int WIDTH  = 16;
+    public static final int HEIGHT = 16;
 
     public int x;
     public int y;
-    public int[] vector;
 
     public Entity(int x, int y)
     {
         this.x = x;
         this.y = y;
-        this.vector = new int[]{-2, -2};
     }
 
-    public void move() {
-        this.x += this.vector[0];
-        this.y += this.vector[1];
-
-        this.vector[0] = this.vector[0] * -1;
-        this.vector[1] = this.vector[1] * -1;
+    @Override
+    public double minX()
+    {
+        return this.x;
     }
 
-    public void draw(Graphics2D gfx) {
-        gfx.fillOval(this.x - 1, this.y - 1, 2, 2);
+    @Override
+    public double minY()
+    {
+        return this.y;
     }
 
+    @Override
+    public double maxX()
+    {
+        return this.x + WIDTH;
+    }
 
+    @Override
+    public double maxY()
+    {
+        return this.y + HEIGHT;
+    }
+
+    @Override
+    public double width()
+    {
+        return WIDTH;
+    }
+
+    @Override
+    public double height()
+    {
+        return HEIGHT;
+    }
+
+    @Override
+    public double centreX()
+    {
+        return (this.minX() + this.maxX()) / 2;
+    }
+
+    @Override
+    public double centreY()
+    {
+        return (this.minY() + this.maxY()) / 2;
+    }
 }

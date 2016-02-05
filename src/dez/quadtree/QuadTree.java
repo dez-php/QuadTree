@@ -14,7 +14,7 @@ public class QuadTree<T> {
 
     public void add(QuadTreeLeaf<T> treeLeaf)
     {
-        this.root.put(treeLeaf);
+        this.root.insert(treeLeaf);
     }
 
     public void clear()

@@ -25,7 +25,7 @@ public class MainLoop implements Runnable {
     public MainLoop()
     {
         isRunning = false;
-        this.mainFrame = new MainFrame(900, 900, "Test QuadTree");
+        this.mainFrame = new MainFrame(800, 600, "Test QuadTree");
         this.tree = new QuadTree<>(0, 0, MainFrame.WIDTH, MainFrame.HEIGHT);
 
         Random random = new Random();
