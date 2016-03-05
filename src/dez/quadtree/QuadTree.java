@@ -1,20 +1,20 @@
 package dez.quadtree;
 
+import java.util.ArrayList;
 
-import java.awt.*;
-
-public class QuadTree<T> {
+public class QuadTree<T extends Object2D> {
 
     private QuadTreeNode<T> root;
+    private ArrayList<T>    items;
 
     public QuadTree(double minX, double minY, double maxX, double maxY)
     {
         this.root = new QuadTreeNode<>(minX, minY, maxX, maxY, 0);
     }
 
-    public void add(QuadTreeLeaf<T> treeLeaf)
+    public void add(T treeLeaf)
     {
-        this.root.put(treeLeaf);
+        this.root.insert(treeLeaf);
     }
 
     public void clear()
@@ -22,14 +22,28 @@ public class QuadTree<T> {
         this.root.clear();
     }
 
-    public void draw(Graphics2D gfx)
+    public void execute(QuadTree.Executor executor)
     {
-        this.root.draw(gfx);
+        this.root.execute(executor);
+    }
+
+    public ArrayList<T> values()
+    {
+        if(this.items == null) {
+            this.items = new ArrayList<>();
+            this.root.values(this.items);
+        }
+
+        return items;
     }
 
     public String toString()
     {
         return String.format("QuadTree{ rootNode: %s }", root);
+    }
+
+    public interface Executor {
+        void execute(Object2D object2D);
     }
 
 }

@@ -1,6 +1,4 @@
 import dez.app.MainLoop;
-import dez.quadtree.QuadTree;
-import dez.quadtree.QuadTreeLeaf;
 
 public class Main {
 
