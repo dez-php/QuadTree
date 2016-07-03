@@ -1,4 +1,4 @@
-package dez.quadtree;
+package dezbyte.quadtree;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,12 @@ public class QuadTree<T extends Object2D> {
             this.root.values(this.items);
         }
 
-        return items;
+        return this.items;
+    }
+
+    public QuadTreeNode<T> rootNode()
+    {
+        return this.root;
     }
 
     public String toString()
@@ -42,6 +47,7 @@ public class QuadTree<T extends Object2D> {
         return String.format("QuadTree{ rootNode: %s }", root);
     }
 
+    @FunctionalInterface
     public interface Executor {
         void execute(Object2D object2D);
     }

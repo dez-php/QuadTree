@@ -1,4 +1,4 @@
-package dez.quadtree;
+package dezbyte.quadtree;
 
 public enum NodeType {
 

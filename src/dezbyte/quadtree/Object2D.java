@@ -1,10 +1,10 @@
-package dez.quadtree;
+package dezbyte.quadtree;
 
 public interface Object2D {
 
-    public double minX();
+    public double getX();
 
-    public double minY();
+    public double getY();
 
     public double maxX();
 

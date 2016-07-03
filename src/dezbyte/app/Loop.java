@@ -1,46 +1,21 @@
-package dez.app;
+package dezbyte.app;
 
-import dez.quadtree.Object2D;
-import dez.quadtree.QuadTree;
-
-import java.awt.*;
 import java.util.Arrays;
-import java.util.Random;
 
-public class MainLoop implements Runnable, QuadTree.Executor {
+abstract public class Loop implements Runnable {
 
     public static boolean isRunning;
-
-    public static float UPDATE_TIME      = 70.0f;
+    public static float UPDATE_TIME      = 70.0F;
     public static int   THREAD_IDLE_TIME = 1;
-    public static float ONE_NANO_SECOND  = 1000000000f;
+    public static float ONE_NANO_SECOND  = 1000000000F;
 
-    private MainFrame mainFrame;
-    private Thread    thread;
-    private Random    random;
+    protected Thread    thread;
+    protected MainFrame mainFrame;
 
-    private QuadTree<Entity> tree;
-
-    public MainLoop()
+    public Loop()
     {
         isRunning = false;
         this.mainFrame = new MainFrame(800, 600, "Test QuadTree");
-        this.tree = new QuadTree<>(0, 0, MainFrame.WIDTH, MainFrame.HEIGHT);
-
-        this.random = new Random();
-
-        for (int i = 0; i < (MainFrame.WIDTH / 16) * (MainFrame.HEIGHT / 16); i++) {
-            int x = this.random.nextInt(MainFrame.WIDTH);
-            int y = this.random.nextInt(MainFrame.HEIGHT);
-            this.tree.add(new Entity(x, y));
-        }
-
-    }
-
-    @Override
-    public void execute(Object2D object2D)
-    {
-        object2D.setX(object2D.minX() + random.nextInt(3));
     }
 
     public synchronized void start()
@@ -70,31 +45,6 @@ public class MainLoop implements Runnable, QuadTree.Executor {
         }
 
         this.close();
-    }
-
-    private void update()
-    {
-
-        for (Object2D object2D : this.tree.values()) {
-            if(MainFrame.WIDTH > object2D.minX()) {
-                object2D.setX(object2D.minX() + 1);
-            } else {
-                object2D.setX(object2D.minX() - 1);
-            }
-        }
-
-
-    }
-
-    private void render()
-    {
-        this.mainFrame.clearFrame();
-
-//        for (Object2D object2D : this.tree.values()) {
-//            this.mainFrame.getGraphics2D().fillOval((int) object2D.minX(), (int) object2D.minY(), 3, 3);
-//        }
-
-        this.mainFrame.swapBuffer();
     }
 
     private void close()
@@ -146,12 +96,16 @@ public class MainLoop implements Runnable, QuadTree.Executor {
 
             if (totalElapsedTime >= ONE_NANO_SECOND) {
                 this.mainFrame.setTitle(
-                        " [FPS: " + counters[0] + ", UPD: " + counters[1] + ", UPD LOST: " + counters[2] + "]");
+                        String.format(" [FPS: %d, UPD: %d, UPD LOST: %d]", counters[0], counters[1], counters[2]));
                 totalElapsedTime = 0;
                 Arrays.fill(counters, 0);
             }
 
         }
     }
+
+    abstract protected void update();
+
+    abstract protected void render();
 
 }

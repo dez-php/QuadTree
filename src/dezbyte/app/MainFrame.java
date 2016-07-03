@@ -1,4 +1,4 @@
-package dez.app;
+package dezbyte.app;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class MainFrame {
 
         this.frame.setResizable(false);
         this.frame.getContentPane().add(this.content);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);

@@ -1,4 +1,4 @@
-import dez.app.MainLoop;
+import dezbyte.app.MainLoop;
 
 public class Main {
 

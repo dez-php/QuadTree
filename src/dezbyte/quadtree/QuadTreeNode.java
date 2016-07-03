@@ -1,9 +1,10 @@
-package dez.quadtree;
+package dezbyte.quadtree;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class QuadTreeNode<T extends Object2D> {
 
@@ -26,15 +27,9 @@ public class QuadTreeNode<T extends Object2D> {
 
     public void execute(QuadTree.Executor executor)
     {
-        if (this.hasChildren) {
-            for (NodeType nodeType : NodeType.values()) {
-                this.nodes.get(nodeType).execute(executor);
-            }
-        } else {
-            for (T leaf : this.leafs) {
-                executor.execute(leaf);
-            }
-        }
+        ArrayList<T> items = new ArrayList<>();
+        this.values(items);
+        items.forEach(executor::execute);
     }
 
     public void values(ArrayList<T> items)
@@ -44,10 +39,16 @@ public class QuadTreeNode<T extends Object2D> {
                 this.nodes.get(nodeType).values(items);
             }
         } else {
-            for (T leaf : this.leafs) {
-                items.add(leaf);
-            }
+            items.addAll(this.leafs.stream().collect(Collectors.toList()));
         }
+    }
+
+    public ArrayList<T> values()
+    {
+        ArrayList<T> items = new ArrayList<>();
+        this.values(items);
+
+        return items;
     }
 
     public void clear()
@@ -98,7 +99,6 @@ public class QuadTreeNode<T extends Object2D> {
 
     public void splitNode()
     {
-
         QuadTreeNode<T> nodeNorthWest = new QuadTreeNode<>(this.bounds.minX, this.bounds.minY, this.bounds.centreX,
                 this.bounds.centreY, this.depth + 1);
         QuadTreeNode<T> nodeNorthEast = new QuadTreeNode<>(this.bounds.centreX, this.bounds.minY, this.bounds.maxX,
@@ -126,7 +126,7 @@ public class QuadTreeNode<T extends Object2D> {
 
     public NodeType detectNodeType(T object2D)
     {
-        return this.detectNodeType(object2D.minX(), object2D.minY());
+        return this.detectNodeType(object2D.getX(), object2D.getY());
     }
 
     public NodeType detectNodeType(double x, double y)
@@ -155,6 +155,11 @@ public class QuadTreeNode<T extends Object2D> {
     public boolean hasChildren()
     {
         return this.hasChildren;
+    }
+
+    public Map<NodeType, QuadTreeNode<T>> nodes()
+    {
+        return this.nodes;
     }
 
     public String toString()
