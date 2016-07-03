@@ -1,54 +1,71 @@
 package dezbyte.quadtree;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class QuadTreeNode<T extends Object2D> {
 
     public static final int MAX_OBJECTS_PER_NODE = 2;
-    public static final int MAX_DEPTH            = 10;
-
+    public static final int MAX_DEPTH            = 4;
+    private Map<NodeType, QuadTreeNode<T>> nodes;
     private int     depth       = 0;
     private boolean hasChildren = false;
-    private QuadTreeBound                  bounds;
-    private Map<NodeType, QuadTreeNode<T>> nodes;
-    private ArrayList<T>                   leafs;
+    private QuadTreeBound bounds;
+    private Set<T>        leafs;
 
     public QuadTreeNode(double minX, double minY, double maxX, double maxY, int depth)
     {
         this.bounds = new QuadTreeBound(minX, minY, maxX, maxY);
-        this.leafs = new ArrayList<>();
+        this.leafs = new HashSet<>();
         this.nodes = new EnumMap<>(NodeType.class);
         this.depth = depth;
     }
 
     public void execute(QuadTree.Executor executor)
     {
-        ArrayList<T> items = new ArrayList<>();
-        this.values(items);
-        items.forEach(executor::execute);
+        this.values().forEach(executor::execute);
     }
 
-    public void values(ArrayList<T> items)
+    public Set<T> values()
     {
+        Set<T> items = new HashSet<>();
+        items.addAll(this.leafs);
+
         if (this.hasChildren) {
-            for (NodeType nodeType : NodeType.values()) {
-                this.nodes.get(nodeType).values(items);
+            this.nodes().forEach((nodeType, node) -> items.addAll(node.values()));
+        }
+
+        return items;
+    }
+
+    public Set<T> leafs()
+    {
+        return this.leafs;
+    }
+
+    public void restructure()
+    {
+        if (this.hasChildren()) {
+            if(this.values().size() > 0) {
+                this.nodes.forEach((nodeType, node) -> node.restructure());
+            } else {
+//                this.nodes.forEach((nodeType, node) -> this.nodes.remove(nodeType));
             }
         } else {
-            items.addAll(this.leafs.stream().collect(Collectors.toList()));
+            Iterator<T> iterator = this.leafs.iterator();
+            while (iterator.hasNext()) {
+                T leaf = iterator.next();
+                if (!this.belong(leaf)) {
+                    QuadTree.rootNode.insert(leaf);
+                    iterator.remove();
+                }
+            }
         }
     }
 
-    public ArrayList<T> values()
+    public boolean belong(T leaf)
     {
-        ArrayList<T> items = new ArrayList<>();
-        this.values(items);
-
-        return items;
+        return this.getBounds().contains(leaf.getX(), leaf.getY());
     }
 
     public void clear()
@@ -84,13 +101,16 @@ public class QuadTreeNode<T extends Object2D> {
             if (MAX_OBJECTS_PER_NODE > this.leafs.size()) {
                 this.leafs.add(object2D);
             } else if (MAX_DEPTH > this.getDepth() && this.leafs.size() >= MAX_OBJECTS_PER_NODE) {
-                this.splitNode();
 
+                this.splitNode();
                 this.nodes.get(this.detectNodeType(object2D)).insert(object2D);
-                for (T leaf : this.leafs) {
-                    this.nodes.get(this.detectNodeType(leaf)).insert(object2D);
+
+                Iterator<T> iterator = this.leafs.iterator();
+                while (iterator.hasNext()) {
+                    T leaf = iterator.next();
+                    this.nodes.get(this.detectNodeType(leaf)).insert(leaf);
+                    iterator.remove();
                 }
-                this.leafs.clear();
             } else {
                 this.leafs.add(object2D);
             }

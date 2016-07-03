@@ -60,6 +60,8 @@ abstract public class Loop implements Runnable {
         float totalElapsedTime = 0;
         int[] counters         = {0, 0, 0};
 
+        this.initialize();
+
         while (isRunning) {
 
             long nowTime     = System.nanoTime();
@@ -103,6 +105,8 @@ abstract public class Loop implements Runnable {
 
         }
     }
+
+    abstract protected void initialize();
 
     abstract protected void update();
 

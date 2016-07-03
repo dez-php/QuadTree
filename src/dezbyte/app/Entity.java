@@ -4,8 +4,8 @@ import dezbyte.quadtree.Object2D;
 
 public class Entity implements Object2D {
 
-    public static final int WIDTH  = 16;
-    public static final int HEIGHT = 16;
+    public static final int WIDTH  = 8;
+    public static final int HEIGHT = 8;
 
     public double x;
     public double y;

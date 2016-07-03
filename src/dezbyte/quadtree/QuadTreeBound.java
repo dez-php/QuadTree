@@ -28,7 +28,7 @@ public class QuadTreeBound {
 
     public boolean contains(double x, double y)
     {
-        return (x >= this.minX && y >= this.minY && x <= this.width && y <= this.height);
+        return (x >= this.minX && y >= this.minY && x <= this.maxX && y <= this.maxY);
     }
 
     public boolean intersects(QuadTreeBound bound)

@@ -1,15 +1,17 @@
 package dezbyte.quadtree;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 public class QuadTree<T extends Object2D> {
 
     private QuadTreeNode<T> root;
-    private ArrayList<T>    items;
+    private Set<T>          items;
+    public static QuadTreeNode rootNode;
 
     public QuadTree(double minX, double minY, double maxX, double maxY)
     {
         this.root = new QuadTreeNode<>(minX, minY, maxX, maxY, 0);
+        rootNode = this.root;
     }
 
     public void add(T treeLeaf)
@@ -27,11 +29,10 @@ public class QuadTree<T extends Object2D> {
         this.root.execute(executor);
     }
 
-    public ArrayList<T> values()
+    public Set<T> values()
     {
         if(this.items == null) {
-            this.items = new ArrayList<>();
-            this.root.values(this.items);
+            this.items = this.root.values();
         }
 
         return this.items;
@@ -40,6 +41,11 @@ public class QuadTree<T extends Object2D> {
     public QuadTreeNode<T> rootNode()
     {
         return this.root;
+    }
+
+    public void restructure()
+    {
+        this.root.restructure();
     }
 
     public String toString()

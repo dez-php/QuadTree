@@ -2,9 +2,11 @@ package dezbyte.app;
 
 import dezbyte.quadtree.Object2D;
 import dezbyte.quadtree.QuadTree;
+import dezbyte.quadtree.QuadTreeNode;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.function.BiConsumer;
 
 public class MainLoop extends Loop implements QuadTree.Executor {
 
@@ -33,8 +35,8 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
             double vectorX = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
             double vectorY = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
-
-            Vector2D vector2D = new Vector2D(vectorX, vectorY);
+//            Vector2D vector2D = new Vector2D(vectorX, vectorY);
+            Vector2D vector2D = new Vector2D(0.5D, 0.5D);
 
             this.tree.add(new Entity(x, y, vector2D, bounds2D));
         }
@@ -42,12 +44,20 @@ public class MainLoop extends Loop implements QuadTree.Executor {
     }
 
     @Override
-    protected void update()
+    protected void initialize()
     {
-        this.tree.values().forEach(object2D -> ((Entity) object2D).move());
+
     }
 
     @Override
+    protected void update()
+    {
+        this.tree.rootNode().values().forEach(object2D -> ((Entity) object2D).move());
+        this.tree.restructure();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     protected void render()
     {
         this.mainFrame.clearFrame();
@@ -57,22 +67,30 @@ public class MainLoop extends Loop implements QuadTree.Executor {
         graphics2D.setFont(new Font("courier", Font.PLAIN, 11));
         graphics2D.setColor(Color.GREEN);
 
-        this.tree.rootNode().nodes().forEach((nodeType, node) -> {
 
-            int x = (int) node.getBounds().minX;
-            int y = (int) node.getBounds().minY;
+        BiConsumer<BiConsumer, QuadTreeNode> nodeRecursive = (consumer, node) -> {
+            if(node.hasChildren()) {
+                node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
+            } else {
+                int x = (int) node.getBounds().minX;
+                int y = (int) node.getBounds().minY;
 
-            int width  = (int) node.getBounds().width;
-            int height = (int) node.getBounds().height;
+                int width  = (int) node.getBounds().width;
+                int height = (int) node.getBounds().height;
 
-            graphics2D.drawRect(x, y, width, height);
-            graphics2D.drawString(node.values().size() + " leafs", x + 5, y + 16);
+                graphics2D.setColor(Color.GREEN);
+                graphics2D.drawString(String.valueOf(node.leafs().size()), x + 5, y + 16);
+                graphics2D.drawRect(x, y, width, height);
+            }
+        };
 
-        });
+        nodeRecursive.accept(nodeRecursive, this.tree.rootNode());
+
+        this.tree.rootNode().nodes();
 
         graphics2D.setColor(Color.WHITE);
 
-        this.tree.values().forEach(object2D -> {
+        this.tree.rootNode().values().forEach(object2D -> {
 
             int x      = (int) object2D.getX();
             int y      = (int) object2D.getY();
@@ -82,6 +100,7 @@ public class MainLoop extends Loop implements QuadTree.Executor {
             graphics2D.fillOval(x, y, width, height);
 
         });
+
         this.mainFrame.swapBuffer();
     }
 
