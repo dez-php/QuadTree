@@ -5,12 +5,10 @@ import dezbyte.quadtree.QuadTree;
 import dezbyte.quadtree.QuadTreeNode;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public class MainLoop extends Loop implements QuadTree.Executor {
+public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
     private Random random;
 
@@ -60,26 +58,48 @@ public class MainLoop extends Loop implements QuadTree.Executor {
         this.tree.rootNode().leafsAll().forEach(object2D -> ((Entity) object2D).move());
         this.tree.update();
 
-        BiConsumer<BiConsumer, QuadTreeNode> collisionChecker = (consumer, node) -> {
-            if(node.hasChildren()) {
-                node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
-            } else if(node.leafs().size() > 0) {
-                for (Entity leaf : (Iterable<Entity>) node.leafs()) {
-                    for (Entity innerLeaf : (Iterable<Entity>) node.leafs()) {
-                        if (!leaf.equals(innerLeaf) && innerLeaf.intersect(leaf)) {
-                            leaf.getVector().rebound();
-                            leaf.getState().collision = EntityState.Collision.YES;
-                            innerLeaf.getState().collision = EntityState.Collision.YES;
+        this.tree.rootNode().eachNode(treeNode -> {
+            if(! treeNode.hasChildren() && treeNode.leafs().size() > 0) {
+
+                for (Entity entityA : (Iterable<Entity>) treeNode.leafs()) {
+                    for (Entity entityB : (Iterable<Entity>) treeNode.leafs()) {
+
+                        if (entityA.intersect(entityB)) {
+                            entityB.getVector().oppositeX();
+                            entityA.getVector().oppositeX();
+                            entityB.getState().collision = EntityState.Collision.YES;
+                            entityA.getState().collision = EntityState.Collision.YES;
                         } else {
-                            leaf.getState().collision = EntityState.Collision.NO;
-                            innerLeaf.getState().collision = EntityState.Collision.NO;
+                            entityB.getState().collision = EntityState.Collision.NO;
+                            entityA.getState().collision = EntityState.Collision.NO;
                         }
+
                     }
                 }
-            }
-        };
 
-        collisionChecker.accept(collisionChecker, this.tree.rootNode());
+            }
+        });
+//
+//        BiConsumer<BiConsumer, QuadTreeNode> collisionChecker = (consumer, node) -> {
+//            if(node.hasChildren()) {
+//                node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
+//            } else if(node.leafs().size() > 0) {
+//                for (Entity leaf : (Iterable<Entity>) node.leafs()) {
+//                    for (Entity innerLeaf : (Iterable<Entity>) node.leafs()) {
+//                        if (!leaf.equals(innerLeaf) && innerLeaf.intersect(leaf)) {
+//                            leaf.getVector().rebound();
+//                            leaf.getState().collision = EntityState.Collision.YES;
+//                            innerLeaf.getState().collision = EntityState.Collision.YES;
+//                        } else {
+//                            leaf.getState().collision = EntityState.Collision.NO;
+//                            innerLeaf.getState().collision = EntityState.Collision.NO;
+//                        }
+//                    }
+//                }
+//            }
+//        };
+
+//        collisionChecker.accept(collisionChecker, this.tree.rootNode());
 
     }
 

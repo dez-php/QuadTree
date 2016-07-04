@@ -26,9 +26,9 @@ public class QuadTree<T extends Object2D> {
         this.root.clear();
     }
 
-    public void execute(QuadTree.Executor executor)
+    public void execute(EachLeaf executor)
     {
-        this.root.execute(executor);
+        this.root.eachLeaf(executor);
     }
 
     public Set<T> leafsAll()
@@ -62,8 +62,13 @@ public class QuadTree<T extends Object2D> {
     }
 
     @FunctionalInterface
-    public interface Executor {
+    public interface EachLeaf {
         void execute(Object2D object2D);
+    }
+
+    @FunctionalInterface
+    public interface EachNode {
+        void execute(QuadTreeNode treeNode);
     }
 
 }

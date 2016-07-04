@@ -1,7 +1,11 @@
 package dezbyte.quadtree;
 
+import dezbyte.app.Entity;
+import dezbyte.app.EntityState;
+
 import java.awt.*;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class QuadTreeNode<T extends Object2D> {
 
@@ -21,9 +25,19 @@ public class QuadTreeNode<T extends Object2D> {
         this.depth = depth;
     }
 
-    public void execute(QuadTree.Executor executor)
+    public void eachLeaf(QuadTree.EachLeaf eachLeaf)
     {
-        this.leafsAll().forEach(executor::execute);
+        this.leafsAll().forEach(eachLeaf::execute);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void eachNode(QuadTree.EachNode eachNode)
+    {
+        BiConsumer<BiConsumer, QuadTreeNode> nodeExecute = (consumer, node) -> {
+            eachNode.execute(node);
+            node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
+        };
+        nodeExecute.accept(nodeExecute, this);
     }
 
     public Set<T> leafsAll()
