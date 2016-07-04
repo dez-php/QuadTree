@@ -81,8 +81,19 @@ public class Entity implements Object2D {
         return (this.getY() + this.maxY()) / 2;
     }
 
+    public Vector2D getVector() {
+        return vector;
+    }
+
+    public Bounds2D getBounds() {
+        return bounds;
+    }
+
     public void move()
     {
+        this.setX(this.getX() + this.vector.getVectorX());
+        this.setY(this.getY() + this.vector.getVectorY());
+
         if(this.maxX() > this.bounds.getMaxX()) {
             this.setX(this.bounds.getMaxX() - this.width());
             this.vector.oppositeX();
@@ -102,9 +113,6 @@ public class Entity implements Object2D {
             this.setY(0.00D);
             this.vector.oppositeY();
         }
-
-        this.setX(this.getX() + this.vector.getVectorX());
-        this.setY(this.getY() + this.vector.getVectorY());
     }
 
 }

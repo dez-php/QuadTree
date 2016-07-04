@@ -6,7 +6,7 @@ import java.util.*;
 public class QuadTreeNode<T extends Object2D> {
 
     public static final int MAX_OBJECTS_PER_NODE = 2;
-    public static final int MAX_DEPTH            = 4;
+    public static final int MAX_DEPTH            = 6;
     private Map<NodeType, QuadTreeNode<T>> nodes;
     private int     depth       = 0;
     private boolean hasChildren = false;
@@ -43,6 +43,7 @@ public class QuadTreeNode<T extends Object2D> {
         return this.leafs;
     }
 
+    @SuppressWarnings("unchecked")
     public void updateBelongs()
     {
         if (this.hasChildren) {
@@ -55,7 +56,7 @@ public class QuadTreeNode<T extends Object2D> {
                 T leaf = iterator.next();
                 if (!this.belong(leaf)) {
                     iterator.remove();
-//                    QuadTree.root.insert(leaf);
+                    QuadTree.rootNode.insert(leaf);
                 }
             }
         }
@@ -64,7 +65,7 @@ public class QuadTreeNode<T extends Object2D> {
     public void updateNodes()
     {
         if(this.hasChildren) {
-            if(this.nodes.values().size() == 0) {
+            if(this.leafsAll().size() == 0) {
                 this.nodes.forEach((nodeType, node) -> this.nodes.remove(nodeType));
                 this.hasChildren = false;
             } else {

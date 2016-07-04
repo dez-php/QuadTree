@@ -5,8 +5,10 @@ import dezbyte.quadtree.QuadTree;
 import dezbyte.quadtree.QuadTreeNode;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MainLoop extends Loop implements QuadTree.Executor {
 
@@ -21,12 +23,12 @@ public class MainLoop extends Loop implements QuadTree.Executor {
         this.tree = new QuadTree<>(0, 0, MainFrame.WIDTH, MainFrame.HEIGHT);
         this.random = new Random();
 
-        int amount = 32;
+        int amount = 8;
 
         Bounds2D bounds2D = new Bounds2D(0, MainFrame.WIDTH, 0, MainFrame.HEIGHT);
 
-        double rangeMin = -1D;
-        double rangeMax = 1D;
+        double rangeMin = 1D;
+        double rangeMax = -1D;
 
         for (int i = 0; i < amount; i++) {
 
@@ -35,13 +37,15 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
             double vectorX = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
             double vectorY = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
+
             Vector2D vector2D = new Vector2D(vectorX, vectorY);
-//            Vector2D vector2D = new Vector2D(0.5D, 0.5D);
 
             this.tree.add(new Entity(x, y, vector2D, bounds2D));
         }
 
     }
+
+
 
     @Override
     protected void initialize()
@@ -50,10 +54,31 @@ public class MainLoop extends Loop implements QuadTree.Executor {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void update()
     {
         this.tree.rootNode().leafsAll().forEach(object2D -> ((Entity) object2D).move());
         this.tree.update();
+
+        BiConsumer<BiConsumer, QuadTreeNode> collisionChecker = (consumer, node) -> {
+            if(node.hasChildren()) {
+                node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
+            } else if(node.leafs().size() > 0) {
+                Iterator<Entity> iterator = node.leafs().iterator();
+                while (iterator.hasNext()) {
+                    Entity leaf = iterator.next();
+                    Iterator<Entity> innerIterator = node.leafs().iterator();
+                    while (innerIterator.hasNext()) {
+                        if(innerIterator.next().getBounds().intersects(leaf.getBounds())) {
+                            System.out.println("intersect...");
+                        }
+                    }
+                }
+            }
+        };
+
+        collisionChecker.accept(collisionChecker, this.tree.rootNode());
+
     }
 
     @Override
@@ -64,10 +89,7 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
         Graphics2D graphics2D = this.mainFrame.getGraphics2D();
 
-        graphics2D.setFont(new Font("courier", Font.PLAIN, 11));
-
-        graphics2D.setColor(Color.RED);
-        graphics2D.drawString(String.valueOf(this.tree.rootNode().leafsAll().size()), 10, 10);
+        graphics2D.setFont(new Font("courier", Font.PLAIN, 8));
 
         graphics2D.setColor(Color.DARK_GRAY);
 
@@ -81,14 +103,14 @@ public class MainLoop extends Loop implements QuadTree.Executor {
                 int width  = (int) node.getBounds().width;
                 int height = (int) node.getBounds().height;
 
-                graphics2D.drawString(String.valueOf(node.leafs().size()), x + 5, y + 16);
+                graphics2D.drawString(String.valueOf(node.leafs().size()), x + 2, y + 10);
                 graphics2D.drawRect(x, y, width, height);
             }
         };
 
         nodeRecursive.accept(nodeRecursive, this.tree.rootNode());
 
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(Color.GRAY);
 
         this.tree.rootNode().leafsAll().forEach(object2D -> {
 

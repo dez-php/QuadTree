@@ -5,12 +5,15 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class QuadTree<T extends Object2D> {
 
+    public static QuadTreeNode rootNode;
+
     private QuadTreeNode<T> root;
     private Set<T>          items;
 
     public QuadTree(double minX, double minY, double maxX, double maxY)
     {
         root = new QuadTreeNode<>(minX, minY, maxX, maxY, 0);
+        rootNode = root;
     }
 
     public void add(T treeLeaf)

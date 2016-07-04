@@ -5,9 +5,9 @@ import java.util.Arrays;
 abstract public class Loop implements Runnable {
 
     public static boolean isRunning;
-    public static float UPDATE_TIME      = 70.0F;
-    public static int   THREAD_IDLE_TIME = 1;
-    public static float ONE_NANO_SECOND  = 1000000000F;
+    public static float UPDATE_RATE         = 70.0F;
+    public static int   THREAD_IDLE_TIME    = 1;
+    public static float ONE_NANO_SECOND     = 1000000000F;
 
     protected Thread    thread;
     protected MainFrame mainFrame;
@@ -58,7 +58,7 @@ abstract public class Loop implements Runnable {
         long  lastTime         = System.nanoTime();
         float lostTime         = 0;
         float totalElapsedTime = 0;
-        int[] counters         = {0, 0, 0};
+        int[] counters         = {0, 0, 0, 0};
 
         this.initialize();
 
@@ -68,27 +68,28 @@ abstract public class Loop implements Runnable {
             long elapsedTime = nowTime - lastTime;
             lastTime = nowTime;
 
-            lostTime += (elapsedTime / (ONE_NANO_SECOND / UPDATE_TIME));
+            lostTime += (elapsedTime / (ONE_NANO_SECOND / UPDATE_RATE));
             totalElapsedTime += elapsedTime;
 
-            boolean hasToRender = false;
+            boolean readyToRender = false;
 
             while (lostTime > 1) {
                 this.update();
                 lostTime--;
 
                 counters[1]++;
-                if (hasToRender) {
+                if (readyToRender) {
                     counters[2]++;
                 } else {
-                    hasToRender = true;
+                    readyToRender = true;
                 }
             }
 
-            if (hasToRender) {
+            if (readyToRender) {
                 this.render();
                 counters[0]++;
             } else {
+                counters[3]++;
                 try {
                     Thread.sleep(THREAD_IDLE_TIME);
                 } catch (InterruptedException e) {
@@ -98,7 +99,7 @@ abstract public class Loop implements Runnable {
 
             if (totalElapsedTime >= ONE_NANO_SECOND) {
                 this.mainFrame.setTitle(
-                        String.format(" [FPS: %d, UPD: %d, UPD LOST: %d]", counters[0], counters[1], counters[2]));
+                        String.format(" [FPS: %d, UPD: %d, LOST: %d, FREE %d]", counters[0], counters[1], counters[2], counters[3]));
                 totalElapsedTime = 0;
                 Arrays.fill(counters, 0);
             }
