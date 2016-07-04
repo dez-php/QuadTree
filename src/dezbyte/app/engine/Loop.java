@@ -1,11 +1,13 @@
-package dezbyte.app;
+package dezbyte.app.engine;
+
+import dezbyte.app.gui.MainFrame;
 
 import java.util.Arrays;
 
 abstract public class Loop implements Runnable {
 
     public static boolean isRunning;
-    public static float UPDATE_RATE         = 70.0F;
+    public static float UPDATE_RATE         = 60F;
     public static int   THREAD_IDLE_TIME    = 1;
     public static float ONE_NANO_SECOND     = 1000000000F;
 

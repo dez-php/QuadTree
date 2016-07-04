@@ -1,4 +1,4 @@
-package dezbyte.app;
+package dezbyte.app.engine.physics;
 
 public class Vector2D {
 
@@ -7,8 +7,8 @@ public class Vector2D {
 
     public Vector2D(double vectorX, double vectorY)
     {
-        this.vectorX = vectorX;
-        this.vectorY = vectorY;
+        this.vectorX = vectorX; //Math.min(vectorX, 1D);
+        this.vectorY = vectorY; //Math.min(vectorY, 1D);
     }
 
     public double getVectorX()
@@ -29,6 +29,18 @@ public class Vector2D {
         this.vectorY = vectorY;
     }
 
+    public void reduceX()
+    {
+        if(this.vectorX > 0D)
+            this.vectorX -= 0.0001D;
+    }
+
+    public void reduceY()
+    {
+        if(this.vectorY > 0D)
+            this.vectorY -= 0.0001D;
+    }
+
     public void oppositeY()
     {
         this.vectorY *= -1;
@@ -47,6 +59,7 @@ public class Vector2D {
 
     public void rebound()
     {
+
         if (this.vectorY > this.vectorX) {
             this.oppositeX();
         } else {
