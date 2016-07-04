@@ -23,7 +23,7 @@ public class MainLoop extends Loop implements QuadTree.Executor {
         this.tree = new QuadTree<>(0, 0, MainFrame.WIDTH, MainFrame.HEIGHT);
         this.random = new Random();
 
-        int amount = 8;
+        int amount = 32;
 
         Bounds2D bounds2D = new Bounds2D(0, MainFrame.WIDTH, 0, MainFrame.HEIGHT);
 
@@ -64,13 +64,15 @@ public class MainLoop extends Loop implements QuadTree.Executor {
             if(node.hasChildren()) {
                 node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
             } else if(node.leafs().size() > 0) {
-                Iterator<Entity> iterator = node.leafs().iterator();
-                while (iterator.hasNext()) {
-                    Entity leaf = iterator.next();
-                    Iterator<Entity> innerIterator = node.leafs().iterator();
-                    while (innerIterator.hasNext()) {
-                        if(innerIterator.next().getBounds().intersects(leaf.getBounds())) {
-                            System.out.println("intersect...");
+                for (Entity leaf : (Iterable<Entity>) node.leafs()) {
+                    for (Entity innerLeaf : (Iterable<Entity>) node.leafs()) {
+                        if (!leaf.equals(innerLeaf) && innerLeaf.intersect(leaf)) {
+                            leaf.getVector().rebound();
+                            leaf.getState().collision = EntityState.Collision.YES;
+                            innerLeaf.getState().collision = EntityState.Collision.YES;
+                        } else {
+                            leaf.getState().collision = EntityState.Collision.NO;
+                            innerLeaf.getState().collision = EntityState.Collision.NO;
                         }
                     }
                 }
@@ -110,14 +112,18 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
         nodeRecursive.accept(nodeRecursive, this.tree.rootNode());
 
-        graphics2D.setColor(Color.GRAY);
+        this.tree.rootNode().leafsAll().forEach(entity -> {
 
-        this.tree.rootNode().leafsAll().forEach(object2D -> {
+            if(entity.getState().collision == EntityState.Collision.YES) {
+                graphics2D.setColor(Color.RED);
+            } else {
+                graphics2D.setColor(Color.WHITE);
+            }
 
-            int x      = (int) object2D.getX();
-            int y      = (int) object2D.getY();
-            int width  = (int) object2D.width();
-            int height = (int) object2D.height();
+            int x      = (int) entity.getX();
+            int y      = (int) entity.getY();
+            int width  = (int) entity.width();
+            int height = (int) entity.height();
 
             graphics2D.fillOval(x, y, width, height);
 

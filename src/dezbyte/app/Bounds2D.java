@@ -43,9 +43,17 @@ public class Bounds2D {
         return maxY;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public boolean intersects(Bounds2D bound)
     {
-        return (bound.width > this.minX && bound.height > this.height && bound.minX < this.height && bound.minY < this.height);
+        return bound.getMaxX() > this.getMinX() && bound.getMaxY() > this.getMinY() && bound.getMinX() < this.getMaxX() && bound.getMinY() < this.getMaxY();
     }
 
 }

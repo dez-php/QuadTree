@@ -39,4 +39,19 @@ public class Vector2D {
         this.vectorX *= -1;
     }
 
+    public void opposite()
+    {
+        this.oppositeX();
+        this.oppositeY();
+    }
+
+    public void rebound()
+    {
+        if (this.vectorY > this.vectorX) {
+            this.oppositeX();
+        } else {
+            this.oppositeY();
+        }
+    }
+
 }

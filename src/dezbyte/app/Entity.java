@@ -12,6 +12,7 @@ public class Entity implements Object2D {
 
     private Vector2D vector;
     private Bounds2D bounds;
+    private EntityState state;
 
     public Entity(int x, int y, Vector2D vector2D, Bounds2D bounds2D)
     {
@@ -19,6 +20,7 @@ public class Entity implements Object2D {
         this.y = y;
         this.vector = vector2D;
         this.bounds = bounds2D;
+        this.state = new EntityState();
     }
 
     @Override
@@ -87,6 +89,15 @@ public class Entity implements Object2D {
 
     public Bounds2D getBounds() {
         return bounds;
+    }
+
+    public EntityState getState() {
+        return this.state;
+    }
+
+    public boolean intersect(Entity entity)
+    {
+        return entity.maxX() > this.getX() && entity.maxY() > this.getY() && entity.getX() < this.maxX() && entity.getY() < this.maxY();
     }
 
     public void move()
