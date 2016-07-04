@@ -21,6 +21,14 @@ public class Vector2D {
         return vectorY;
     }
 
+    public void setVectorX(double vectorX) {
+        this.vectorX = vectorX;
+    }
+
+    public void setVectorY(double vectorY) {
+        this.vectorY = vectorY;
+    }
+
     public void oppositeY()
     {
         this.vectorY *= -1;

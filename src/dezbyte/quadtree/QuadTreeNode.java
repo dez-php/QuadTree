@@ -23,16 +23,16 @@ public class QuadTreeNode<T extends Object2D> {
 
     public void execute(QuadTree.Executor executor)
     {
-        this.values().forEach(executor::execute);
+        this.leafsAll().forEach(executor::execute);
     }
 
-    public Set<T> values()
+    public Set<T> leafsAll()
     {
         Set<T> items = new HashSet<>();
         items.addAll(this.leafs);
 
         if (this.hasChildren) {
-            this.nodes().forEach((nodeType, node) -> items.addAll(node.values()));
+            this.nodes().forEach((nodeType, node) -> items.addAll(node.leafsAll()));
         }
 
         return items;
@@ -43,22 +43,32 @@ public class QuadTreeNode<T extends Object2D> {
         return this.leafs;
     }
 
-    public void restructure()
+    public void updateBelongs()
     {
-        if (this.hasChildren()) {
-            if(this.values().size() > 0) {
-                this.nodes.forEach((nodeType, node) -> node.restructure());
-            } else {
-//                this.nodes.forEach((nodeType, node) -> this.nodes.remove(nodeType));
+        if (this.hasChildren) {
+            if(this.leafsAll().size() > 0) {
+                this.nodes.forEach((nodeType, node) -> node.updateBelongs());
             }
         } else {
             Iterator<T> iterator = this.leafs.iterator();
             while (iterator.hasNext()) {
                 T leaf = iterator.next();
                 if (!this.belong(leaf)) {
-                    QuadTree.rootNode.insert(leaf);
                     iterator.remove();
+//                    QuadTree.root.insert(leaf);
                 }
+            }
+        }
+    }
+
+    public void updateNodes()
+    {
+        if(this.hasChildren) {
+            if(this.nodes.values().size() == 0) {
+                this.nodes.forEach((nodeType, node) -> this.nodes.remove(nodeType));
+                this.hasChildren = false;
+            } else {
+                this.nodes.forEach((nodeType, node) -> node.updateNodes());
             }
         }
     }
@@ -82,13 +92,13 @@ public class QuadTreeNode<T extends Object2D> {
         this.nodes.clear();
     }
 
-    public ArrayList<T> search(QuadTreeBound treeBound)
+    public Set<T> search(QuadTreeBound treeBound)
     {
         treeBound.intersects(this.bounds);
         return null;
     }
 
-    public ArrayList<T> search(Rectangle rectangle)
+    public Set<T> search(Rectangle rectangle)
     {
         return this.search(new QuadTreeBound(rectangle.x, rectangle.y, rectangle.getMaxX(), rectangle.getMaxY()));
     }

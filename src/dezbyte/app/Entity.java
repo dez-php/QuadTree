@@ -83,11 +83,23 @@ public class Entity implements Object2D {
 
     public void move()
     {
-        if(this.maxX() > this.bounds.getMaxX() || this.getX() < this.bounds.getMinX()) {
+        if(this.maxX() > this.bounds.getMaxX()) {
+            this.setX(this.bounds.getMaxX() - this.width());
             this.vector.oppositeX();
         }
 
-        if(this.maxY() > this.bounds.getMaxY() || this.getY() < this.bounds.getMinY()) {
+        if(this.maxY() > this.bounds.getMaxY()) {
+            this.setY(this.bounds.getMaxY() - this.height());
+            this.vector.oppositeY();
+        }
+
+        if(0 >= this.getX()) {
+            this.setX(0.00D);
+            this.vector.oppositeX();
+        }
+
+        if(0 >= this.getY()) {
+            this.setY(0.00D);
             this.vector.oppositeY();
         }
 

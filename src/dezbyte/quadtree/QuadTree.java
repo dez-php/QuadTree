@@ -2,16 +2,15 @@ package dezbyte.quadtree;
 
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class QuadTree<T extends Object2D> {
 
     private QuadTreeNode<T> root;
     private Set<T>          items;
-    public static QuadTreeNode rootNode;
 
     public QuadTree(double minX, double minY, double maxX, double maxY)
     {
-        this.root = new QuadTreeNode<>(minX, minY, maxX, maxY, 0);
-        rootNode = this.root;
+        root = new QuadTreeNode<>(minX, minY, maxX, maxY, 0);
     }
 
     public void add(T treeLeaf)
@@ -29,10 +28,10 @@ public class QuadTree<T extends Object2D> {
         this.root.execute(executor);
     }
 
-    public Set<T> values()
+    public Set<T> leafsAll()
     {
         if(this.items == null) {
-            this.items = this.root.values();
+            this.items = this.root.leafsAll();
         }
 
         return this.items;
@@ -43,9 +42,15 @@ public class QuadTree<T extends Object2D> {
         return this.root;
     }
 
-    public void restructure()
+    public static QuadTreeNode root()
     {
-        this.root.restructure();
+        return null;
+    }
+
+    public void update()
+    {
+        this.root.updateBelongs();
+        this.root.updateNodes();
     }
 
     public String toString()

@@ -35,8 +35,8 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
             double vectorX = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
             double vectorY = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
-//            Vector2D vector2D = new Vector2D(vectorX, vectorY);
-            Vector2D vector2D = new Vector2D(0.5D, 0.5D);
+            Vector2D vector2D = new Vector2D(vectorX, vectorY);
+//            Vector2D vector2D = new Vector2D(0.5D, 0.5D);
 
             this.tree.add(new Entity(x, y, vector2D, bounds2D));
         }
@@ -52,8 +52,8 @@ public class MainLoop extends Loop implements QuadTree.Executor {
     @Override
     protected void update()
     {
-        this.tree.rootNode().values().forEach(object2D -> ((Entity) object2D).move());
-        this.tree.restructure();
+        this.tree.rootNode().leafsAll().forEach(object2D -> ((Entity) object2D).move());
+        this.tree.update();
     }
 
     @Override
@@ -65,8 +65,11 @@ public class MainLoop extends Loop implements QuadTree.Executor {
         Graphics2D graphics2D = this.mainFrame.getGraphics2D();
 
         graphics2D.setFont(new Font("courier", Font.PLAIN, 11));
-        graphics2D.setColor(Color.GREEN);
 
+        graphics2D.setColor(Color.RED);
+        graphics2D.drawString(String.valueOf(this.tree.rootNode().leafsAll().size()), 10, 10);
+
+        graphics2D.setColor(Color.DARK_GRAY);
 
         BiConsumer<BiConsumer, QuadTreeNode> nodeRecursive = (consumer, node) -> {
             if(node.hasChildren()) {
@@ -78,7 +81,6 @@ public class MainLoop extends Loop implements QuadTree.Executor {
                 int width  = (int) node.getBounds().width;
                 int height = (int) node.getBounds().height;
 
-                graphics2D.setColor(Color.GREEN);
                 graphics2D.drawString(String.valueOf(node.leafs().size()), x + 5, y + 16);
                 graphics2D.drawRect(x, y, width, height);
             }
@@ -86,11 +88,9 @@ public class MainLoop extends Loop implements QuadTree.Executor {
 
         nodeRecursive.accept(nodeRecursive, this.tree.rootNode());
 
-        this.tree.rootNode().nodes();
-
         graphics2D.setColor(Color.WHITE);
 
-        this.tree.rootNode().values().forEach(object2D -> {
+        this.tree.rootNode().leafsAll().forEach(object2D -> {
 
             int x      = (int) object2D.getX();
             int y      = (int) object2D.getY();
