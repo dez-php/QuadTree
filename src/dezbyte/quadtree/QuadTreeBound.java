@@ -45,7 +45,7 @@ public class QuadTreeBound {
     @Override
     public String toString()
     {
-        return String.format("QuadTreeBound{ getX:%s getY:%s, w:%s h:%s }", this.minX, this.minY, this.width,
+        return String.format("QuadTreeBound{ x:%s y:%s, w:%s h:%s }", this.minX, this.minY, this.width,
                              this.height);
     }
 }

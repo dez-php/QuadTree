@@ -89,7 +89,7 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
                 for (Entity entityA : (Iterable<Entity>) treeNode.leafs()) {
                     for (Entity entityB : (Iterable<Entity>) treeNode.leafs()) {
                         if(! entityA.equals(entityB) && entityA.colliding(entityB)) {
-                            entityA.getVector().opposite();
+
                         }
                     }
                 }

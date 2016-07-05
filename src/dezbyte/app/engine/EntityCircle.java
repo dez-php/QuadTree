@@ -26,14 +26,12 @@ public class EntityCircle extends Entity<EntityCircle> {
 
     public double getVelocityX()
     {
-        this.velocity.reduceX();
-        return this.vector.getVectorX() + this.velocity.getVectorX();
+        return 0;
     }
 
     public double getVelocityY()
     {
-        this.velocity.reduceX();
-        return this.vector.getVectorY() + this.velocity.getVectorY();
+        return 0;
     }
 
     public void move()
@@ -43,22 +41,22 @@ public class EntityCircle extends Entity<EntityCircle> {
 
         if(this.maxX() > this.bounds.getMaxX()) {
             this.setX(this.bounds.getMaxX() - this.width());
-            this.vector.oppositeX();
+//            this.vector.oppositeX();
         }
 
         if(this.maxY() > this.bounds.getMaxY()) {
             this.setY(this.bounds.getMaxY() - this.height());
-            this.vector.oppositeY();
+//            this.vector.oppositeY();
         }
 
         if(0 >= this.getX()) {
             this.setX(0.00D);
-            this.vector.oppositeX();
+//            this.vector.oppositeX();
         }
 
         if(0 >= this.getY()) {
             this.setY(0.00D);
-            this.vector.oppositeY();
+//            this.vector.oppositeY();
         }
     }
 
@@ -67,7 +65,7 @@ public class EntityCircle extends Entity<EntityCircle> {
     {
         double radiusSum = this.getRadius() + entity.getRadius();
         boolean collided = this.getDestination(entity) <= Math.hypot(radiusSum, radiusSum);
-        this.velocity.setVectorX(3D);
+//        this.velocity.setVectorX(3D);
         return collided;
     }
 

@@ -2,69 +2,111 @@ package dezbyte.app.engine.physics;
 
 public class Vector2D {
 
-    protected double vectorX = 0.00F;
-    protected double vectorY = 0.00F;
+    protected double x = 0.00D;
+    protected double y = 0.00D;
 
-    public Vector2D(double vectorX, double vectorY)
+    public Vector2D(double d)
     {
-        this.vectorX = vectorX; //Math.min(vectorX, 1D);
-        this.vectorY = vectorY; //Math.min(vectorY, 1D);
+        this(d, d);
     }
 
-    public double getVectorX()
+    public Vector2D(double x, double y)
     {
-        return vectorX;
+        this.x = x;
+        this.y = y;
     }
 
-    public double getVectorY()
+    public double x() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double y() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public Vector2D add(Vector2D vector2D)
     {
-        return vectorY;
+        this.setX(this.x + vector2D.x());
+        this.setY(this.y + vector2D.y());
+
+        return this;
     }
 
-    public void setVectorX(double vectorX) {
-        this.vectorX = vectorX;
-    }
-
-    public void setVectorY(double vectorY) {
-        this.vectorY = vectorY;
-    }
-
-    public void reduceX()
+    public Vector2D substract(Vector2D vector2D)
     {
-        if(this.vectorX > 0D)
-            this.vectorX -= 0.0001D;
+        this.setX(this.x - vector2D.x());
+        this.setY(this.y - vector2D.y());
+
+        return this;
     }
 
-    public void reduceY()
+    public Vector2D multiply(double scalar)
     {
-        if(this.vectorY > 0D)
-            this.vectorY -= 0.0001D;
+        this.setX(this.x * scalar);
+        this.setY(this.y * scalar);
+
+        return this;
     }
 
-    public void oppositeY()
+    public Vector2D multiply(Vector2D vector2D)
     {
-        this.vectorY *= -1;
+        this.setX(this.x * vector2D.x());
+        this.setY(this.y * vector2D.y());
+
+        return this;
     }
 
-    public void oppositeX()
+    public Vector2D normalize()
     {
-        this.vectorX *= -1;
-    }
+        double length = this.length();
 
-    public void opposite()
-    {
-        this.oppositeX();
-        this.oppositeY();
-    }
-
-    public void rebound()
-    {
-
-        if (this.vectorY > this.vectorX) {
-            this.oppositeX();
-        } else {
-            this.oppositeY();
+        if(length != 0.00D) {
+            this.setX(this.x / length);
+            this.setY(this.y / length);
         }
+
+        return this;
+    }
+
+    public double length()
+    {
+        return Math.hypot(this.x, this.y);
+    }
+
+    public double distance(Vector2D vector2D)
+    {
+        double dx = this.x - vector2D.x();
+        double dy = this.y - vector2D.y();
+
+        return Math.hypot(dx, dy);
+    }
+
+    public double dot(Vector2D vector2D)
+    {
+        return this.x * vector2D.x() + this.y * vector2D.y();
+    }
+
+    public double det(Vector2D vector2D)
+    {
+        return this.x * vector2D.y() - this.y * vector2D.x();
+    }
+
+    public double angle(Vector2D vector2D)
+    {
+        return Math.atan2(this.det(vector2D), this.dot(vector2D));
+    }
+
+    public String toString()
+    {
+        return String.format("Vector2D [x: %s y: %s]", this.x, this.y);
     }
 
 }
