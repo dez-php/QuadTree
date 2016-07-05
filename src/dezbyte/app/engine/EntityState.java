@@ -1,4 +1,4 @@
-package dezbyte.app;
+package dezbyte.app.engine;
 
 public class EntityState {
 

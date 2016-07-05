@@ -1,10 +1,19 @@
 package dezbyte.app;
 
+import dezbyte.app.engine.Entity;
+import dezbyte.app.engine.EntityCircle;
+import dezbyte.app.engine.Loop;
+import dezbyte.app.engine.physics.Bounds2D;
+import dezbyte.app.engine.physics.Vector2D;
+import dezbyte.app.gui.MainFrame;
 import dezbyte.quadtree.Object2D;
 import dezbyte.quadtree.QuadTree;
 import dezbyte.quadtree.QuadTreeNode;
 
 import java.awt.*;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
@@ -12,11 +21,17 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
     private Random random;
 
-    private QuadTree<Entity> tree;
+    private QuadTree<Entity>            tree;
+    private Map<Layer, HashSet<Entity>> entities;
 
     public MainLoop()
     {
         super();
+
+        this.entities = new EnumMap<>(Layer.class);
+        this.entities.put(Layer.LAYER1, new HashSet<>());
+        this.entities.put(Layer.LAYER2, new HashSet<>());
+        this.entities.put(Layer.LAYER3, new HashSet<>());
 
         this.tree = new QuadTree<>(0, 0, MainFrame.WIDTH, MainFrame.HEIGHT);
         this.random = new Random();
@@ -28,22 +43,31 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
         double rangeMin = 1D;
         double rangeMax = -1D;
 
-        for (int i = 0; i < amount; i++) {
+        Entity entityA = new EntityCircle(10, 0, 250, new Vector2D(0.5D, 0D), bounds2D);
+        this.entities.get(Layer.LAYER1).add(entityA);
+        this.tree.add(entityA);
 
-            int x = this.random.nextInt(MainFrame.WIDTH);
-            int y = this.random.nextInt(MainFrame.HEIGHT);
+        Entity entityB = new EntityCircle(5, MainFrame.WIDTH, 250, new Vector2D(1D, 0D), bounds2D);
+        this.entities.get(Layer.LAYER1).add(entityB);
+        this.tree.add(entityB);
 
-            double vectorX = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
-            double vectorY = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
-
-            Vector2D vector2D = new Vector2D(vectorX, vectorY);
-
-            this.tree.add(new Entity(x, y, vector2D, bounds2D));
-        }
+//        for (int i = 0; i < amount; i++) {
+//
+//            int x = this.random.nextInt(MainFrame.WIDTH);
+//            int y = this.random.nextInt(MainFrame.HEIGHT);
+//
+//            double vectorX = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
+//            double vectorY = (rangeMax - rangeMin) + rangeMin * this.random.nextDouble();
+//
+//            Vector2D vector2D = new Vector2D(vectorX, vectorY);
+//
+//            Entity entity = new EntityCircle(4, x, y, vector2D, bounds2D);
+//
+//            this.entities.get(Layer.LAYER1).add(entity);
+//            this.tree.add(entity);
+//        }
 
     }
-
-
 
     @Override
     protected void initialize()
@@ -53,53 +77,25 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void update()
+    protected void update(float elapsedTime)
     {
+        System.out.println(elapsedTime);
         this.tree.rootNode().leafsAll().forEach(object2D -> ((Entity) object2D).move());
         this.tree.update();
 
         this.tree.rootNode().eachNode(treeNode -> {
-            if(! treeNode.hasChildren() && treeNode.leafs().size() > 0) {
+            if (!treeNode.hasChildren() && treeNode.leafs().size() > 0) {
 
                 for (Entity entityA : (Iterable<Entity>) treeNode.leafs()) {
                     for (Entity entityB : (Iterable<Entity>) treeNode.leafs()) {
-
-                        if (entityA.intersect(entityB)) {
-                            entityB.getVector().oppositeX();
-                            entityA.getVector().oppositeX();
-                            entityB.getState().collision = EntityState.Collision.YES;
-                            entityA.getState().collision = EntityState.Collision.YES;
-                        } else {
-                            entityB.getState().collision = EntityState.Collision.NO;
-                            entityA.getState().collision = EntityState.Collision.NO;
+                        if(! entityA.equals(entityB) && entityA.colliding(entityB)) {
+                            entityA.getVector().opposite();
                         }
-
                     }
                 }
 
             }
         });
-//
-//        BiConsumer<BiConsumer, QuadTreeNode> collisionChecker = (consumer, node) -> {
-//            if(node.hasChildren()) {
-//                node.nodes().forEach((nodeType, innerNode) -> consumer.accept(consumer, innerNode));
-//            } else if(node.leafs().size() > 0) {
-//                for (Entity leaf : (Iterable<Entity>) node.leafs()) {
-//                    for (Entity innerLeaf : (Iterable<Entity>) node.leafs()) {
-//                        if (!leaf.equals(innerLeaf) && innerLeaf.intersect(leaf)) {
-//                            leaf.getVector().rebound();
-//                            leaf.getState().collision = EntityState.Collision.YES;
-//                            innerLeaf.getState().collision = EntityState.Collision.YES;
-//                        } else {
-//                            leaf.getState().collision = EntityState.Collision.NO;
-//                            innerLeaf.getState().collision = EntityState.Collision.NO;
-//                        }
-//                    }
-//                }
-//            }
-//        };
-
-//        collisionChecker.accept(collisionChecker, this.tree.rootNode());
 
     }
 
@@ -132,13 +128,15 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
         nodeRecursive.accept(nodeRecursive, this.tree.rootNode());
 
+        graphics2D.setColor(Color.GREEN);
+
         this.tree.rootNode().leafsAll().forEach(entity -> {
 
-            if(entity.getState().collision == EntityState.Collision.YES) {
-                graphics2D.setColor(Color.RED);
-            } else {
-                graphics2D.setColor(Color.WHITE);
-            }
+//            if(entity.getState().collision == EntityState.Collision.YES) {
+//                graphics2D.setColor(Color.RED);
+//            } else {
+//                graphics2D.setColor(Color.WHITE);
+//            }
 
             int x      = (int) entity.getX();
             int y      = (int) entity.getY();
@@ -146,8 +144,15 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
             int height = (int) entity.height();
 
             graphics2D.fillOval(x, y, width, height);
+            graphics2D.setColor(Color.RED);
 
         });
+
+//        this.tree.rootNode().eachLeaf(leafA -> {
+//            this.tree.rootNode().eachLeaf(leafB -> {
+//                graphics2D.drawLine((int) leafA.centreX(), (int) leafA.centreY(), (int) leafB.centreX(), (int) leafB.centreY());
+//            });
+//        });
 
         this.mainFrame.swapBuffer();
     }

@@ -1,4 +1,4 @@
-package dezbyte.app;
+package dezbyte.app.gui;
 
 import javax.swing.*;
 import java.awt.*;

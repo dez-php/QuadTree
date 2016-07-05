@@ -1,16 +1,13 @@
 package dezbyte.quadtree;
 
-import dezbyte.app.Entity;
-import dezbyte.app.EntityState;
-
 import java.awt.*;
 import java.util.*;
 import java.util.function.BiConsumer;
 
 public class QuadTreeNode<T extends Object2D> {
 
-    public static final int MAX_OBJECTS_PER_NODE = 2;
-    public static final int MAX_DEPTH            = 6;
+    public static final int MAX_OBJECTS_PER_NODE = 1;
+    public static final int MAX_DEPTH            = 4;
     private Map<NodeType, QuadTreeNode<T>> nodes;
     private int     depth       = 0;
     private boolean hasChildren = false;
