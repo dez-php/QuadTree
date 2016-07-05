@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 
 public class QuadTreeNode<T extends Object2D> {
 
-    public static final int MAX_OBJECTS_PER_NODE = 1;
+    public static final int MAX_OBJECTS_PER_NODE = 2;
     public static final int MAX_DEPTH            = 4;
     private Map<NodeType, QuadTreeNode<T>> nodes;
     private int     depth       = 0;
@@ -87,7 +87,7 @@ public class QuadTreeNode<T extends Object2D> {
 
     public boolean belong(T leaf)
     {
-        return this.getBounds().contains(leaf.getX(), leaf.getY());
+        return this.getBounds().contains(leaf.x(), leaf.y());
     }
 
     public void clear()
@@ -168,7 +168,7 @@ public class QuadTreeNode<T extends Object2D> {
 
     public NodeType detectNodeType(T object2D)
     {
-        return this.detectNodeType(object2D.getX(), object2D.getY());
+        return this.detectNodeType(object2D.x(), object2D.y());
     }
 
     public NodeType detectNodeType(double x, double y)

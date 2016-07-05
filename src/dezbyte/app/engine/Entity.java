@@ -1,64 +1,62 @@
 package dezbyte.app.engine;
 
-import dezbyte.app.engine.physics.Bounds2D;
-import dezbyte.app.engine.physics.Vector2D;
+import dezbyte.app.engine.geometry.Bounds2D;
+import dezbyte.app.engine.geometry.Vector2D;
 import dezbyte.quadtree.Object2D;
 
 abstract public class Entity<T extends Entity> implements Object2D {
 
-    public double x;
-    public double y;
     protected int width  = 0;
     protected int height = 0;
-    protected Vector2D    vector;
+    protected Vector2D    position;
+    protected Vector2D    velocity;
     protected Bounds2D    bounds;
     protected EntityState state;
 
-    public Entity(int width, int height, int x, int y, Vector2D vector2D, Bounds2D bounds2D)
+    public Entity(int width, int height, Vector2D position, Vector2D velocity, Bounds2D bounds2D)
     {
         this.width = width;
         this.height = height;
-        this.x = x;
-        this.y = y;
-        this.vector = vector2D;
         this.bounds = bounds2D;
+        this.position = position;
+        this.velocity = velocity;
         this.state = new EntityState();
     }
 
     @Override
-    public double getX()
+    public double x()
     {
-        return this.x;
+        return this.position.x();
     }
 
     @Override
     public void setX(double x)
     {
-        this.x = x;
+        this.position.setX(x);
     }
 
     @Override
-    public double getY()
+    public double y()
     {
-        return this.y;
+        return this.position.y();
     }
 
     @Override
     public void setY(double y)
     {
-        this.y = y;
+        this.position.setY(y);
     }
 
     @Override
     public double maxX()
     {
-        return this.x + this.width;
+        return this.position.x() + this.width;
     }
 
     @Override
     public double maxY()
     {
-        return this.y + this.height;
+        return this.position.y() + this.height;
     }
 
     @Override
@@ -76,33 +74,33 @@ abstract public class Entity<T extends Entity> implements Object2D {
     @Override
     public double centreX()
     {
-        return (this.getX() + this.maxX()) / 2;
+        return (this.x() + this.maxX()) / 2;
     }
 
     @Override
     public double centreY()
     {
-        return (this.getY() + this.maxY()) / 2;
+        return (this.y() + this.maxY()) / 2;
     }
 
-    public Vector2D getVector()
+    public Vector2D position()
     {
-        return vector;
+        return this.position;
     }
 
-    public Bounds2D getBounds()
+    public Vector2D velocity()
+    {
+        return this.velocity;
+    }
+
+    public Bounds2D bounds()
     {
         return bounds;
     }
 
-    public EntityState getState()
+    public EntityState state()
     {
         return this.state;
-    }
-
-    public double getDestination(Entity entity)
-    {
-        return Math.hypot(this.centreX() - entity.centreX(), this.centreY() - entity.centreY());
     }
 
     abstract public void move();

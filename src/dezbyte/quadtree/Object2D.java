@@ -2,9 +2,9 @@ package dezbyte.quadtree;
 
 public interface Object2D {
 
-    public double getX();
+    public double x();
 
-    public double getY();
+    public double y();
 
     public double maxX();
 

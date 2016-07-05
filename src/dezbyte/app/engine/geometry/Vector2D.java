@@ -1,4 +1,4 @@
-package dezbyte.app.engine.physics;
+package dezbyte.app.engine.geometry;
 
 public class Vector2D {
 

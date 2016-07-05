@@ -1,4 +1,4 @@
-import dezbyte.app.engine.physics.Vector2D;
+import dezbyte.app.engine.geometry.Vector2D;
 
 public class TestVector {
 

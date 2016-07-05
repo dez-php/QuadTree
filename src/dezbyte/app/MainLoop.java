@@ -3,8 +3,8 @@ package dezbyte.app;
 import dezbyte.app.engine.Entity;
 import dezbyte.app.engine.EntityCircle;
 import dezbyte.app.engine.Loop;
-import dezbyte.app.engine.physics.Bounds2D;
-import dezbyte.app.engine.physics.Vector2D;
+import dezbyte.app.engine.geometry.Bounds2D;
+import dezbyte.app.engine.geometry.Vector2D;
 import dezbyte.app.gui.MainFrame;
 import dezbyte.quadtree.Object2D;
 import dezbyte.quadtree.QuadTree;
@@ -43,11 +43,11 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
         double rangeMin = 1D;
         double rangeMax = -1D;
 
-        Entity entityA = new EntityCircle(10, 0, 250, new Vector2D(0.5D, 0D), bounds2D);
+        Entity entityA = new EntityCircle(5, new Vector2D(0D, 250D), new Vector2D(1.5D, 1.6D), bounds2D);
         this.entities.get(Layer.LAYER1).add(entityA);
         this.tree.add(entityA);
 
-        Entity entityB = new EntityCircle(5, MainFrame.WIDTH, 250, new Vector2D(1D, 0D), bounds2D);
+        Entity entityB = new EntityCircle(5, new Vector2D(MainFrame.WIDTH, 250D), new Vector2D(1.5D, 1.5D), bounds2D);
         this.entities.get(Layer.LAYER1).add(entityB);
         this.tree.add(entityB);
 
@@ -79,8 +79,8 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
     @SuppressWarnings("unchecked")
     protected void update(float elapsedTime)
     {
-        System.out.println(elapsedTime);
-        this.tree.rootNode().leafsAll().forEach(object2D -> ((Entity) object2D).move());
+//        System.out.println(elapsedTime / Loop.ONE_NANO_SECOND);
+        this.tree.rootNode().leafsAll().forEach(Entity::move);
         this.tree.update();
 
         this.tree.rootNode().eachNode(treeNode -> {
@@ -88,9 +88,7 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
                 for (Entity entityA : (Iterable<Entity>) treeNode.leafs()) {
                     for (Entity entityB : (Iterable<Entity>) treeNode.leafs()) {
-                        if(! entityA.equals(entityB) && entityA.colliding(entityB)) {
-
-                        }
+                        System.out.println(entityA.velocity().distance(entityB.velocity()));
                     }
                 }
 
@@ -138,8 +136,8 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 //                graphics2D.setColor(Color.WHITE);
 //            }
 
-            int x      = (int) entity.getX();
-            int y      = (int) entity.getY();
+            int x      = (int) entity.x();
+            int y      = (int) entity.y();
             int width  = (int) entity.width();
             int height = (int) entity.height();
 
