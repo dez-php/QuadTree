@@ -40,12 +40,22 @@ public class Vector2D {
         return this;
     }
 
+    public static Vector2D add(Vector2D vectorA, Vector2D vectorB)
+    {
+        return new Vector2D(vectorA.x() + vectorB.x(), vectorB.y() + vectorB.y());
+    }
+
     public Vector2D substract(Vector2D vector2D)
     {
         this.setX(this.x - vector2D.x());
         this.setY(this.y - vector2D.y());
 
         return this;
+    }
+
+    public static Vector2D substract(Vector2D vectorA, Vector2D vectorB)
+    {
+        return new Vector2D(vectorA.x() - vectorB.x(), vectorB.y() - vectorB.y());
     }
 
     public Vector2D multiply(double scalar)
@@ -62,6 +72,11 @@ public class Vector2D {
         this.setY(this.y * vector2D.y());
 
         return this;
+    }
+
+    public static Vector2D multiply(Vector2D vectorA, Vector2D vectorB)
+    {
+        return new Vector2D(vectorA.x() * vectorB.x(), vectorB.y() * vectorB.y());
     }
 
     public Vector2D normalize()
