@@ -18,7 +18,7 @@ public class TestVector {
 
         System.out.println(Math.acos(vectorD.normalize().dot(vectorV)) * (180 / Math.PI));
 
-        System.out.println(new Vector2D(1, 4).substract(new Vector2D(4, 2)));
+        System.out.println(new Vector2D(4, 2).substract(new Vector2D(1, 4)));
 
     }
 
