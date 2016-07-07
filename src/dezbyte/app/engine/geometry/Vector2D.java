@@ -47,8 +47,8 @@ public class Vector2D {
 
     public Vector2D subtract(Vector2D vector2D)
     {
-        this.setX(this.x - vector2D.x());
-        this.setY(this.y - vector2D.y());
+        this.setX(Math.abs(this.x - vector2D.x()));
+        this.setY(Math.abs(this.y - vector2D.y()));
 
         return this;
     }
