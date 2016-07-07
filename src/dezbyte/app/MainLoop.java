@@ -88,7 +88,7 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
                 for (Entity entityA : (Iterable<Entity>) treeNode.leafs()) {
                     for (Entity entityB : (Iterable<Entity>) treeNode.leafs()) {
-                        System.out.println(entityA.velocity().distance(entityB.velocity()));
+                        System.out.println(entityA.velocity().normalize().distance(entityB.velocity().normalize()));
                     }
                 }
 

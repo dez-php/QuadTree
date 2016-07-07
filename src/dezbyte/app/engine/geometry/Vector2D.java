@@ -45,7 +45,7 @@ public class Vector2D {
         return new Vector2D(vectorA.x() + vectorB.x(), vectorB.y() + vectorB.y());
     }
 
-    public Vector2D substract(Vector2D vector2D)
+    public Vector2D subtract(Vector2D vector2D)
     {
         this.setX(this.x - vector2D.x());
         this.setY(this.y - vector2D.y());
@@ -53,7 +53,7 @@ public class Vector2D {
         return this;
     }
 
-    public static Vector2D substract(Vector2D vectorA, Vector2D vectorB)
+    public static Vector2D subtract(Vector2D vectorA, Vector2D vectorB)
     {
         return new Vector2D(vectorA.x() - vectorB.x(), vectorB.y() - vectorB.y());
     }
