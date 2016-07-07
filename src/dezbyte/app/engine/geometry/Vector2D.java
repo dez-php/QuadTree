@@ -124,4 +124,8 @@ public class Vector2D {
         return String.format("Vector2D [x: %s y: %s]", this.x, this.y);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Vector2D && this.x() == ((Vector2D) object).x() && this.y() == ((Vector2D) object).y();
+    }
 }
