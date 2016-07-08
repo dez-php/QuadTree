@@ -1,18 +1,26 @@
 package dezbyte.app.engine.geometry;
 
 import java.awt.*;
+import java.util.EnumMap;
+import java.util.Map;
 
 public class Triangle {
 
     protected Vector2D position;
     protected int width;
     protected int height;
+    protected Map<Vertex, Vector2D> points;
 
     public Triangle(Vector2D position, int width, int height)
     {
         this.position = position;
         this.width = width;
         this.height = height;
+
+        this.points = new EnumMap<>(Vertex.class);
+        this.points.put(Vertex.A, new Vector2D(0D, 0D));
+        this.points.put(Vertex.B, new Vector2D(0D, 0D));
+        this.points.put(Vertex.C, new Vector2D(0D, 0D));
     }
 
     public Triangle()
@@ -71,6 +79,10 @@ public class Triangle {
     {
         int[][] points = this.points();
         return new Polygon(points[0], points[1], 3);
+    }
+
+    public enum Vertex{
+        A, B, C
     }
 
 }
