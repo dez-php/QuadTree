@@ -10,6 +10,7 @@ import dezbyte.app.gui.MainFrame;
 import dezbyte.quadtree.QuadTree;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class TestVectorLoop extends Loop {
 
@@ -46,8 +47,6 @@ public class TestVectorLoop extends Loop {
     @Override
     protected void update(float elapsedTime)
     {
-        circleA.velocity().setY(circleA.velocity().y() * 1.0001D);
-
         circleA.move();
         circleB.move();
 
