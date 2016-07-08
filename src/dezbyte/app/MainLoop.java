@@ -26,7 +26,7 @@ public class MainLoop extends Loop implements QuadTree.EachLeaf {
 
     public MainLoop()
     {
-        super();
+        super("main_loop");
 
         this.entities = new EnumMap<>(Layer.class);
         this.entities.put(Layer.LAYER1, new HashSet<>());

@@ -55,7 +55,7 @@ public class Vector2D {
 
     public static Vector2D subtract(Vector2D vectorA, Vector2D vectorB)
     {
-        return new Vector2D(vectorA.x() - vectorB.x(), vectorB.y() - vectorB.y());
+        return new Vector2D(vectorA.x() - vectorB.x(), vectorA.y() - vectorB.y());
     }
 
     public Vector2D multiply(double scalar)

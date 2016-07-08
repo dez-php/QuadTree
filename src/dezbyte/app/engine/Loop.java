@@ -13,11 +13,13 @@ abstract public class Loop implements Runnable {
 
     protected Thread    thread;
     protected MainFrame mainFrame;
+    protected String threadName;
 
-    public Loop()
+    public Loop(String threadName)
     {
         isRunning = false;
         this.mainFrame = new MainFrame(800, 600, "Test QuadTree");
+        this.threadName = threadName;
     }
 
     public synchronized void start()
@@ -29,6 +31,7 @@ abstract public class Loop implements Runnable {
         isRunning = true;
 
         this.thread = new Thread(this);
+        this.thread.setName(this.threadName);
         this.thread.start();
     }
 
@@ -76,7 +79,7 @@ abstract public class Loop implements Runnable {
             boolean readyToRender = false;
 
             while (lostTime > 1) {
-                this.update(elapsedTime);
+                this.update(elapsedTime / ONE_NANO_SECOND);
                 lostTime--;
 
                 counters[1]++;

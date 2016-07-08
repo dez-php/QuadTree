@@ -1,5 +1,3 @@
-package dezbyte;
-
 import dezbyte.app.TestVectorLoop;
 
 public class TestVectorMain {
